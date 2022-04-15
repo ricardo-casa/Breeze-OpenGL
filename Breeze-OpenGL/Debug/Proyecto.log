@@ -1,0 +1,8 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: El directorio intermedio (Debug\) contiene archivos compartidos de otro proyecto (CargaModelos.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
+  Proyecto.cpp
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(526,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(528,43): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  Proyecto.vcxproj -> C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Debug\Proyecto.exe
