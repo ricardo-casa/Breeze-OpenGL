@@ -1,0 +1,6 @@
+﻿  CargaModelos.cpp
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\CargaModelos\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\CargaModelos\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\CargaModelos\CargaModelos.cpp(506,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\CargaModelos\CargaModelos.cpp(508,43): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+  CargaModelos.vcxproj -> C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Debug\CargaModelos.exe
