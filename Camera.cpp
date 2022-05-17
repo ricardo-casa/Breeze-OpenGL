@@ -78,6 +78,16 @@ glm::vec3 Camera::getCameraDirection()
 	return glm::normalize(front);
 }
 
+GLfloat Camera::getCameraYaw()
+{
+	return yaw;
+}
+
+GLfloat Camera::getCameraPitch()
+{
+	return pitch;
+}
+
 void Camera::update()
 {
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));

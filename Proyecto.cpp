@@ -20,6 +20,8 @@ Pr�ctica 5: Carga de Modelos
 //para probar el importer
 //#include<assimp/Importer.hpp>
 
+#include <irrKlang.h>
+
 #include "Window.h"
 #include "Mesh.h"
 #include "Shader_light.h"
@@ -37,6 +39,8 @@ Pr�ctica 5: Carga de Modelos
 #include "SpotLight.h"
 #include "Material.h"
 
+using namespace irrklang;
+
 
 const float toRadians = 3.14159265f / 180.0f;
 
@@ -48,12 +52,51 @@ float puerta;
 float cordTexU;
 float cordTexV;
 
+// ***** variables para animaionde jett *****
+float xJett;
+float yJett;
+float rotJett;
+float banderajett;
+
+// ***** variables para animaionde humo *****
+
+float rotHumo;
+float scaHumo;
+float banderahumo;
+
+// **** variables para animacion del tiro *****
+float scaTiro;
+float ScaTiro2;
+float xTiro;
+float yTiro;
+float xTiro2;
+float yTiro2;
+float bt;
+float bt2;
+
+// ***** camara ***
+float yawG;
+float yaw1;
+float pitch1;
+
+//***** iluminacion **
+
+float dia;
+float cont;
+float cont2;
+float bandI;
+float bandI2;
+float red;
+float green;
+float blue;
+
 Window mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
 
 Camera camera;
 
+// ***** texturas ******
 Texture dirtTexture;
 Texture plainTexture;
 Texture pisoTexture;
@@ -62,9 +105,9 @@ Texture escalonTexture;
 Texture paredTexture;
 Texture paredATexture;
 Texture aguaTexture;
+Texture phoenixTexture;
 
-
-
+// **** modelos ***
 Model contenedor_M;
 Model caja_M;
 Model marco_M;
@@ -75,14 +118,25 @@ Model compu_M;
 Model humo_M;
 Model jett_M;
 Model tiro_M;
+Model gr_M;
+Model ak47_M;
+Model pistol_M;
+Model rifle_M;
+Model faro_M;
+Model antorcha_M;
+Model shotgun_M;
+Model machP_M;
+Model heavyP_M;
 
 
 
 Skybox skybox;
 
+
 //materiales
 Material Material_brillante;
 Material Material_opaco;
+Material Material_phoenix;
 
 
 //Sphere cabeza = Sphere(0.5, 20, 20);
@@ -92,6 +146,7 @@ static double limitFPS = 1.0 / 60.0;
 
 // luz direccional
 DirectionalLight mainLight;
+DirectionalLight mainLight_night;
 //para declarar varias luces de tipo pointlight
 PointLight pointLights[MAX_POINT_LIGHTS];
 SpotLight spotLights[MAX_SPOT_LIGHTS];
@@ -251,47 +306,366 @@ void CrearDado()
 		20, 21, 22,
 		22, 23, 20,
 	};
-	//Ejercicio 1: reemplazar con sus dados de 6 caras texturizados, agregar normales
-// average normals
+	
 	GLfloat cubo_vertices[] = {
 		// front
 		//x		y		z		S		T			NX		NY		NZ
-		-0.5f, -0.5f,  0.5f,	0.26f,  0.34f,		0.0f,	0.0f,	-1.0f,	//0
-		0.5f, -0.5f,  0.5f,		0.49f,	0.34f,		0.0f,	0.0f,	-1.0f,	//1
-		0.5f,  0.5f,  0.5f,		0.49f,	0.65f,		0.0f,	0.0f,	-1.0f,	//2
-		-0.5f,  0.5f,  0.5f,	0.26f,	0.65f,		0.0f,	0.0f,	-1.0f,	//3
+		-0.5f, -0.5f,  0.5f,	0.14f,  0.63f,		0.0f,	0.0f,	-1.0f,	//0
+		0.5f, -0.5f,  0.5f,		0.27f,	0.63f,		0.0f,	0.0f,	-1.0f,	//1
+		0.5f,  0.5f,  0.5f,		0.27f,	0.81f,		0.0f,	0.0f,	-1.0f,	//2
+		-0.5f,  0.5f,  0.5f,	0.14f,	0.81f,		0.0f,	0.0f,	-1.0f,	//3
 		// right
 		//x		y		z		S		T
-		0.5f, -0.5f,  0.5f,	    0.51f,  0.34f,		-1.0f,	0.0f,	0.0f,
-		0.5f, -0.5f,  -0.5f,	0.74f,	0.34f,		-1.0f,	0.0f,	0.0f,
-		0.5f,  0.5f,  -0.5f,	0.74f,	0.65f,		-1.0f,	0.0f,	0.0f,
-		0.5f,  0.5f,  0.5f,	    0.51f,	0.65f,		-1.0f,	0.0f,	0.0f,
+		0.5f, -0.5f,  0.5f,	    0.27f,  0.63f,		-1.0f,	0.0f,	0.0f,
+		0.5f, -0.5f,  -0.5f,	0.4f,	0.63f,		-1.0f,	0.0f,	0.0f,
+		0.5f,  0.5f,  -0.5f,	0.4f,	0.81f,		-1.0f,	0.0f,	0.0f,
+		0.5f,  0.5f,  0.5f,	    0.27f,	0.81f,		-1.0f,	0.0f,	0.0f,
 		// back
-		-0.5f, -0.5f, -0.5f,	0.75f,  0.34f,		0.0f,	0.0f,	1.0f,
-		0.5f, -0.5f, -0.5f,		1.0f,	0.34f,		0.0f,	0.0f,	1.0f,
-		0.5f,  0.5f, -0.5f,		1.0f,	0.65f,		0.0f,	0.0f,	1.0f,
-		-0.5f,  0.5f, -0.5f,	0.75f,	0.65f,		0.0f,	0.0f,	1.0f,
+		-0.5f, -0.5f, -0.5f,	0.52f,  0.63f,		0.0f,	0.0f,	1.0f,
+		0.5f, -0.5f, -0.5f,		0.4f,	0.63f,		0.0f,	0.0f,	1.0f,
+		0.5f,  0.5f, -0.5f,		0.4f,	0.81f,		0.0f,	0.0f,	1.0f,
+		-0.5f,  0.5f, -0.5f,	0.52f,	0.81f,		0.0f,	0.0f,	1.0f,
 
 		// left
 		//x		y		z		S		T
-		-0.5f, -0.5f,  -0.5f,	0.01f,  0.34f,		1.0f,	0.0f,	0.0f,
-		-0.5f, -0.5f,  0.5f,	0.24f,	0.34f,		1.0f,	0.0f,	0.0f,
-		-0.5f,  0.5f,  0.5f,	0.24f,	0.65f,		1.0f,	0.0f,	0.0f,
-		-0.5f,  0.5f,  -0.5f,	0.01f,	0.65f,		1.0f,	0.0f,	0.0f,
+		-0.5f, -0.5f,  -0.5f,	0.1f,  0.63f,		1.0f,	0.0f,	0.0f,
+		-0.5f, -0.5f,  0.5f,	0.14f,	0.63f,		1.0f,	0.0f,	0.0f,
+		-0.5f,  0.5f,  0.5f,	0.14f,	0.81f,		1.0f,	0.0f,	0.0f,
+		-0.5f,  0.5f,  -0.5f,	0.1f,	0.81f,		1.0f,	0.0f,	0.0f,
 
 		// bottom
 		//x		y		z		S		T
-		-0.5f, -0.5f,  0.5f,	0.51f,  0.01f,		0.0f,	1.0f,	0.0f,
-		0.5f,  -0.5f,  0.5f,	0.74f,	0.01f,		0.0f,	1.0f,	0.0f,
-		 0.5f,  -0.5f,  -0.5f,	0.74f,	0.32f,		0.0f,	1.0f,	0.0f,
-		-0.5f, -0.5f,  -0.5f,	0.51f,	0.32f,		0.0f,	1.0f,	0.0f,
+		-0.5f, -0.5f,  0.5f,	0.14f,  0.63f,		0.0f,	1.0f,	0.0f,
+		0.5f,  -0.5f,  0.5f,	0.27f,	0.63f,		0.0f,	1.0f,	0.0f,
+		 0.5f,  -0.5f,  -0.5f,	0.27f,	0.65f,		0.0f,	1.0f,	0.0f,
+		-0.5f, -0.5f,  -0.5f,	0.14f,	0.65f,		0.0f,	1.0f,	0.0f,
 
 		//UP
 		 //x		y		z		S		T
-		 -0.5f, 0.5f,  0.5f,	0.51f,  0.67f,		0.0f,	-1.0f,	0.0f,
-		 0.5f,  0.5f,  0.5f,	0.74f,	0.67f,		0.0f,	-1.0f,	0.0f,
-		  0.5f, 0.5f,  -0.5f,	0.74f,	0.99f,		0.0f,	-1.0f,	0.0f,
-		 -0.5f, 0.5f,  -0.5f,	0.51f,	0.99f,		0.0f,	-1.0f,	0.0f,
+		 -0.5f, 0.5f,  0.5f,	0.14f,  0.81f,		0.0f,	-1.0f,	0.0f,
+		 0.5f,  0.5f,  0.5f,	0.25f,	0.81f,		0.0f,	-1.0f,	0.0f,
+		  0.5f, 0.5f,  -0.5f,	0.25f,	0.99f,		0.0f,	-1.0f,	0.0f,
+		 -0.5f, 0.5f,  -0.5f,	0.14f,	0.99f,		0.0f,	-1.0f,	0.0f,
+
+	};
+
+	unsigned int cubo_indicesCuerpo[] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// right
+		4, 5, 6,
+		6, 7, 4,
+		// back
+		8, 9, 10,
+		10, 11, 8,
+
+		// left
+		12, 13, 14,
+		14, 15, 12,
+		// bottom
+		16, 17, 18,
+		18, 19, 16,
+		// top
+		20, 21, 22,
+		22, 23, 20,
+	};
+
+	GLfloat cubo_verticesCuerpo[] = {
+		// front
+		//x		y		z		S		T			NX		NY		NZ
+		-0.5f, -0.8f,  0.3f,	0.149f,  0.38f,		0.0f,	0.0f,	-1.0f,	//0
+		0.5f, -0.8f,  0.3f,		0.27f,	0.38f,		0.0f,	0.0f,	-1.0f,	//1
+		0.5f,  0.8f,  0.3f,		0.27f,	0.62f,		0.0f,	0.0f,	-1.0f,	//2
+		-0.5f,  0.8f,  0.3f,	0.149f,	0.62f,		0.0f,	0.0f,	-1.0f,	//3
+		// right
+		//x		y		z		S		T
+		0.5f, -0.8f,  0.3f,	    0.27f,  0.38f,		-1.0f,	0.0f,	0.0f,
+		0.5f, -0.8f,  -0.3f,	0.33f,	0.38f,		-1.0f,	0.0f,	0.0f,
+		0.5f,  0.8f,  -0.3f,	0.33f,	0.62f,		-1.0f,	0.0f,	0.0f,
+		0.5f,  0.8f,  0.3f,	    0.27f,	0.62f,		-1.0f,	0.0f,	0.0f,
+		// back
+		-0.5f, -0.8f, -0.3f,	0.33f,  0.38f,		0.0f,	0.0f,	1.0f,
+		0.5f, -0.8f, -0.3f,		0.47f,	0.38f,		0.0f,	0.0f,	1.0f,
+		0.5f,  0.8f, -0.3f,		0.47f,	0.62f,		0.0f,	0.0f,	1.0f,
+		-0.5f,  0.8f, -0.3f,	0.33f,	0.62f,		0.0f,	0.0f,	1.0f,
+
+		// left
+		//x		y		z		S		T
+		-0.5f, -0.8f,  -0.3f,	0.47f,  0.38f,		1.0f,	0.0f,	0.0f,
+		-0.5f, -0.8f,  0.3f,	0.52f,	0.38f,		1.0f,	0.0f,	0.0f,
+		-0.5f,  0.8f,  0.3f,	0.52f,	0.62f,		1.0f,	0.0f,	0.0f,
+		-0.5f,  0.8f,  -0.3f,	0.47f,	0.62f,		1.0f,	0.0f,	0.0f,
+
+		// bottom
+		//x		y		z		S		T
+		-0.5f, -0.8f,  0.3f,	0.33f,  0.38f,		0.0f,	1.0f,	0.0f,
+		0.5f,  -0.8f,  0.3f,	0.47f,	0.38f,		0.0f,	1.0f,	0.0f,
+		 0.5f,  -0.8f,  -0.3f,	0.47f,	0.41f,		0.0f,	1.0f,	0.0f,
+		-0.5f, -0.8f,  -0.3f,	0.33f,	0.41f,		0.0f,	1.0f,	0.0f,
+
+		//UP
+		 //x		y		z		S		T
+		 -0.5f, 0.8f,  0.3f,	0.0f,  0.0f,		0.0f,	-1.0f,	0.0f,
+		 0.5f,  0.8f,  0.3f,	0.0f,	0.0f,		0.0f,	-1.0f,	0.0f,
+		  0.5f, 0.8f,  -0.3f,	0.0f,	0.0f,		0.0f,	-1.0f,	0.0f,
+		 -0.5f, 0.8f,  -0.3f,	0.0f,	0.0f,		0.0f,	-1.0f,	0.0f,
+
+	};
+
+	unsigned int cubo_indicesBD[] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// right
+		4, 5, 6,
+		6, 7, 4,
+		// back
+		8, 9, 10,
+		10, 11, 8,
+
+		// left
+		12, 13, 14,
+		14, 15, 12,
+		// bottom
+		16, 17, 18,
+		18, 19, 16,
+		// top
+		20, 21, 22,
+		22, 23, 20,
+	};
+
+	GLfloat cubo_verticesBD[] = {
+		// front
+		//x		y		z		S		T			NX		NY		NZ
+		-0.2f, -0.8f,  0.2f,	0.82f,  0.45f,		0.0f,	0.0f,	-1.0f,	//0
+		0.2f, -0.8f,  0.2f,		0.89f,	0.45f,		0.0f,	0.0f,	-1.0f,	//1
+		0.2f,  0.8f,  0.2f,		0.89f,	0.72f,		0.0f,	0.0f,	-1.0f,	//2
+		-0.2f,  0.8f,  0.2f,	0.82f,	0.72f,		0.0f,	0.0f,	-1.0f,	//3
+		// right
+		//x		y		z		S		T
+		0.2f, -0.8f,  0.2f,	    0.89f,  0.45f,		-1.0f,	0.0f,	0.0f,
+		0.2f, -0.8f,  -0.2f,	0.93f,	0.45f,		-1.0f,	0.0f,	0.0f,
+		0.2f,  0.8f,  -0.2f,	0.93f,	0.72f,		-1.0f,	0.0f,	0.0f,
+		0.2f,  0.8f,  0.2f,	    0.89f,	0.72f,		-1.0f,	0.0f,	0.0f,
+		// back
+		-0.2f, -0.8f, -0.2f,	0.93f,  0.45f,		0.0f,	0.0f,	1.0f,
+		0.2f, -0.8f, -0.2f,		0.98f,	0.45f,		0.0f,	0.0f,	1.0f,
+		0.2f,  0.8f, -0.2f,		0.98f,	0.72f,		0.0f,	0.0f,	1.0f,
+		-0.2f,  0.8f, -0.2f,	0.93f,	0.72f,		0.0f,	0.0f,	1.0f,
+
+		// left
+		//x		y		z		S		T
+		-0.2f, -0.8f,  -0.2f,	0.77f,  0.45f,		1.0f,	0.0f,	0.0f,
+		-0.2f, -0.8f,  0.2f,	0.82f,	0.45f,		1.0f,	0.0f,	0.0f,
+		-0.2f,  0.8f,  0.2f,	0.82f,	0.72f,		1.0f,	0.0f,	0.0f,
+		-0.2f,  0.8f,  -0.2f,	0.77f,	0.72f,		1.0f,	0.0f,	0.0f,
+
+		// bottom
+		//x		y		z		S		T
+		-0.2f, -0.8f,  0.2f,	0.89f,  0.38f,		0.0f,	1.0f,	0.0f,
+		0.2f,  -0.8f,  0.2f,	0.89f,	0.45f,		0.0f,	1.0f,	0.0f,
+		 0.2f,  -0.8f,  -0.2f,	0.94f,	0.45f,		0.0f,	1.0f,	0.0f,
+		-0.2f, -0.8f,  -0.2f,	0.94f,	0.38f,		0.0f,	1.0f,	0.0f,
+
+		//UP
+		 //x		y		z		S		T
+		 -0.2f, 0.8f,  0.2f,	0.89f,  0.79f,		0.0f,	-1.0f,	0.0f,
+		 0.2f,  0.8f,  0.2f,	0.89f,	0.72f,		0.0f,	-1.0f,	0.0f,
+		  0.2f, 0.8f,  -0.2f,	0.93f,	0.72f,		0.0f,	-1.0f,	0.0f,
+		 -0.2f, 0.8f,  -0.2f,	0.93f,	0.79f,		0.0f,	-1.0f,	0.0f,
+
+	};
+
+	unsigned int cubo_indicesBI[] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// right
+		4, 5, 6,
+		6, 7, 4,
+		// back
+		8, 9, 10,
+		10, 11, 8,
+
+		// left
+		12, 13, 14,
+		14, 15, 12,
+		// bottom
+		16, 17, 18,
+		18, 19, 16,
+		// top
+		20, 21, 22,
+		22, 23, 20,
+	};
+
+	GLfloat cubo_verticesBI[] = {
+		// front
+		//x		y		z		S		T			NX		NY		NZ
+		-0.2f, -0.8f,  0.2f,	0.64f,  0.45f,		0.0f,	0.0f,	-1.0f,	//0
+		0.2f, -0.8f,  0.2f,		0.72f,	0.45f,		0.0f,	0.0f,	-1.0f,	//1
+		0.2f,  0.8f,  0.2f,		0.72f,	0.72f,		0.0f,	0.0f,	-1.0f,	//2
+		-0.2f,  0.8f,  0.2f,	0.64f,	0.72f,		0.0f,	0.0f,	-1.0f,	//3
+		// right
+		//x		y		z		S		T
+		0.2f, -0.8f,  0.2f,	    0.72f,  0.45f,		-1.0f,	0.0f,	0.0f,
+		0.2f, -0.8f,  -0.2f,	0.76f,	0.45f,		-1.0f,	0.0f,	0.0f,
+		0.2f,  0.8f,  -0.2f,	0.76f,	0.72f,		-1.0f,	0.0f,	0.0f,
+		0.2f,  0.8f,  0.2f,	    0.72f,	0.72f,		-1.0f,	0.0f,	0.0f,
+		// back
+		-0.2f, -0.8f, -0.2f,	0.59f,  0.45f,		0.0f,	0.0f,	1.0f,
+		0.2f, -0.8f, -0.2f,		0.54f,	0.45f,		0.0f,	0.0f,	1.0f,
+		0.2f,  0.8f, -0.2f,		0.54f,	0.72f,		0.0f,	0.0f,	1.0f,
+		-0.2f,  0.8f, -0.2f,	0.59f,	0.72f,		0.0f,	0.0f,	1.0f,
+
+		// left
+		//x		y		z		S		T
+		-0.2f, -0.8f,  -0.2f,	0.59f,  0.45f,		1.0f,	0.0f,	0.0f,
+		-0.2f, -0.8f,  0.2f,	0.64f,	0.45f,		1.0f,	0.0f,	0.0f,
+		-0.2f,  0.8f,  0.2f,	0.64f,	0.72f,		1.0f,	0.0f,	0.0f,
+		-0.2f,  0.8f,  -0.2f,	0.59f,	0.72f,		1.0f,	0.0f,	0.0f,
+
+		// bottom
+		//x		y		z		S		T
+		-0.2f, -0.8f,  0.2f,	0.64f,  0.45f,		0.0f,	1.0f,	0.0f,
+		0.2f,  -0.8f,  0.2f,	0.64f,	0.38f,		0.0f,	1.0f,	0.0f,
+		 0.2f,  -0.8f,  -0.2f,	0.59f,	0.38f,		0.0f,	1.0f,	0.0f,
+		-0.2f, -0.8f,  -0.2f,	0.59f,	0.45f,		0.0f,	1.0f,	0.0f,
+
+		//UP
+		 //x		y		z		S		T
+		 -0.2f, 0.8f,  0.2f,	0.64f,  0.72f,		0.0f,	-1.0f,	0.0f,
+		 0.2f,  0.8f,  0.2f,	0.64f,	0.79f,		0.0f,	-1.0f,	0.0f,
+		  0.2f, 0.8f,  -0.2f,	0.59f,	0.79f,		0.0f,	-1.0f,	0.0f,
+		 -0.2f, 0.8f,  -0.2f,	0.59f,	0.72f,		0.0f,	-1.0f,	0.0f,
+
+	};
+
+	unsigned int cubo_indicesPD[] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// right
+		4, 5, 6,
+		6, 7, 4,
+		// back
+		8, 9, 10,
+		10, 11, 8,
+
+		// left
+		12, 13, 14,
+		14, 15, 12,
+		// bottom
+		16, 17, 18,
+		18, 19, 16,
+		// top
+		20, 21, 22,
+		22, 23, 20,
+	};
+
+	GLfloat cubo_verticesPD[] = {
+		// front
+		//x		y		z		S		T			NX		NY		NZ
+		-0.25f, -0.8f,  0.3f,	0.34f,  0.1f,		0.0f,	0.0f,	-1.0f,	//0
+		0.25f, -0.8f,  0.3f,	0.4f,	0.1f,		0.0f,	0.0f,	-1.0f,	//1
+		0.25f,  0.8f,  0.3f,	0.4f,	0.38f,		0.0f,	0.0f,	-1.0f,	//2
+		-0.25f,  0.8f,  0.3f,	0.34f,	0.38f,		0.0f,	0.0f,	-1.0f,	//3
+		// right
+		//x		y		z		S		T
+		0.25f, -0.8f,  0.3f,	0.14f,  0.1f,		-1.0f,	0.0f,	0.0f,
+		0.25f, -0.8f,  -0.3f,	0.2f,	0.1f,		-1.0f,	0.0f,	0.0f,
+		0.25f,  0.8f,  -0.3f,	0.2f,	0.38f,		-1.0f,	0.0f,	0.0f,
+		0.25f,  0.8f,  0.3f,	0.14f,	0.38f,		-1.0f,	0.0f,	0.0f,
+		// back
+		-0.25f, -0.8f, -0.3f,	0.27f,  0.1f,		0.0f,	0.0f,	1.0f,
+		0.25f, -0.8f, -0.3f,	0.2f,	0.1f,		0.0f,	0.0f,	1.0f,
+		0.25f,  0.8f, -0.3f,	0.2f,	0.38f,		0.0f,	0.0f,	1.0f,
+		-0.25f,  0.8f, -0.3f,	0.27f,	0.38f,		0.0f,	0.0f,	1.0f,
+
+		// left
+		//x		y		z		S		T
+		-0.25f, -0.8f,  -0.3f,	0.27f,  0.1f,		1.0f,	0.0f,	0.0f,
+		-0.25f, -0.8f,  0.3f,	0.34f,	0.1f,		1.0f,	0.0f,	0.0f,
+		-0.25f,  0.8f,  0.3f,	0.34f,	0.38f,		1.0f,	0.0f,	0.0f,
+		-0.25f,  0.8f,  -0.3f,	0.27f,	0.38f,		1.0f,	0.0f,	0.0f,
+
+		// bottom
+		//x		y		z		S		T
+		-0.25f, -0.8f,  0.3f,	0.27f,  0.01f,		0.0f,	1.0f,	0.0f,
+		0.25f,  -0.8f,  0.3f,	0.21f,	0.01f,		0.0f,	1.0f,	0.0f,
+		0.25f,  -0.8f,  -0.3f,	0.21f,	0.1f,		0.0f,	1.0f,	0.0f,
+		-0.25f, -0.8f,  -0.3f,	0.27f,	0.1f,		0.0f,	1.0f,	0.0f,
+
+		//UP
+		 //x		y		z		S		T
+		 -0.25f, 0.8f,  0.3f,	0.64f,  0.72f,		0.0f,	-1.0f,	0.0f,
+		 0.25f,  0.8f,  0.3f,	0.64f,	0.79f,		0.0f,	-1.0f,	0.0f,
+		  0.25f, 0.8f,  -0.3f,	0.59f,	0.79f,		0.0f,	-1.0f,	0.0f,
+		 -0.25f, 0.8f,  -0.3f,	0.59f,	0.72f,		0.0f,	-1.0f,	0.0f,
+
+	};
+
+	unsigned int cubo_indicesPI[] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// right
+		4, 5, 6,
+		6, 7, 4,
+		// back
+		8, 9, 10,
+		10, 11, 8,
+
+		// left
+		12, 13, 14,
+		14, 15, 12,
+		// bottom
+		16, 17, 18,
+		18, 19, 16,
+		// top
+		20, 21, 22,
+		22, 23, 20,
+	};
+
+	GLfloat cubo_verticesPI[] = {
+		// front
+		//x		y		z		S		T			NX		NY		NZ
+		-0.25f, -0.8f,  0.3f,	0.41f,  0.1f,		0.0f,	0.0f,	-1.0f,	//0
+		0.25f, -0.8f,  0.3f,	0.47f,	0.1f,		0.0f,	0.0f,	-1.0f,	//1
+		0.25f,  0.8f,  0.3f,	0.47f,	0.37f,		0.0f,	0.0f,	-1.0f,	//2
+		-0.25f,  0.8f,  0.3f,	0.41f,	0.37f,		0.0f,	0.0f,	-1.0f,	//3
+		// right
+		//x		y		z		S		T
+		0.25f, -0.8f,  0.3f,	0.47f,  0.1f,		-1.0f,	0.0f,	0.0f,
+		0.25f, -0.8f,  -0.3f,	0.53f,	0.1f,		-1.0f,	0.0f,	0.0f,
+		0.25f,  0.8f,  -0.3f,	0.53f,	0.37f,		-1.0f,	0.0f,	0.0f,
+		0.25f,  0.8f,  0.3f,	0.47f,	0.37f,		-1.0f,	0.0f,	0.0f,
+		// back
+		-0.25f, -0.8f, -0.3f,	0.6f,  0.1f,		0.0f,	0.0f,	1.0f,
+		0.25f, -0.8f, -0.3f,	0.53f,	0.1f,		0.0f,	0.0f,	1.0f,
+		0.25f,  0.8f, -0.3f,	0.53f,	0.37f,		0.0f,	0.0f,	1.0f,
+		-0.25f,  0.8f, -0.3f,	0.6f,	0.37f,		0.0f,	0.0f,	1.0f,
+
+		// left
+		//x		y		z		S		T
+		-0.25f, -0.8f,  -0.3f,	0.53f,  0.1f,		1.0f,	0.0f,	0.0f,
+		-0.25f, -0.8f,  0.3f,	0.66f,	0.1f,		1.0f,	0.0f,	0.0f,
+		-0.25f,  0.8f,  0.3f,	0.66f,	0.37f,		1.0f,	0.0f,	0.0f,
+		-0.25f,  0.8f,  -0.3f,	0.53f,	0.37f,		1.0f,	0.0f,	0.0f,
+
+		// bottom
+		//x		y		z		S		T
+		-0.25f, -0.8f,  0.3f,	0.6f,  0.01f,		0.0f,	1.0f,	0.0f,
+		0.25f,  -0.8f,  0.3f,	0.54f,	0.01f,		0.0f,	1.0f,	0.0f,
+		0.25f,  -0.8f,  -0.3f,	0.54f,	0.1f,		0.0f,	1.0f,	0.0f,
+		-0.25f, -0.8f,  -0.3f,	0.6f,	0.1f,		0.0f,	1.0f,	0.0f,
+
+		//UP
+		 //x		y		z		S		T
+		 -0.25f, 0.8f,  0.3f,	0.64f,  0.72f,		0.0f,	-1.0f,	0.0f,
+		 0.25f,  0.8f,  0.3f,	0.64f,	0.79f,		0.0f,	-1.0f,	0.0f,
+		  0.25f, 0.8f,  -0.3f,	0.59f,	0.79f,		0.0f,	-1.0f,	0.0f,
+		 -0.25f, 0.8f,  -0.3f,	0.59f,	0.72f,		0.0f,	-1.0f,	0.0f,
 
 	};
 
@@ -299,90 +673,26 @@ void CrearDado()
 	dado->CreateMesh(cubo_vertices, cubo_indices, 192, 36);
 	meshList.push_back(dado);
 
+	Mesh* dadoCuerpo = new Mesh();
+	dadoCuerpo->CreateMesh(cubo_verticesCuerpo, cubo_indicesCuerpo, 192, 36);
+	meshList.push_back(dadoCuerpo);
+
+	Mesh* dadoBD = new Mesh();
+	dadoBD->CreateMesh(cubo_verticesBD, cubo_indicesBD, 192, 36);
+	meshList.push_back(dadoBD);
+
+	Mesh* dadoBI = new Mesh();
+	dadoBI->CreateMesh(cubo_verticesBI, cubo_indicesBI, 192, 36);
+	meshList.push_back(dadoBI);
+
+	Mesh* dadoPD = new Mesh();
+	dadoPD->CreateMesh(cubo_verticesPD, cubo_indicesPD, 192, 36);
+	meshList.push_back(dadoPD);
+
+	Mesh* dadoPI = new Mesh();
+	dadoPI->CreateMesh(cubo_verticesPI, cubo_indicesPI, 192, 36);
+	meshList.push_back(dadoPI);
 }
-
-void CrearOctaedro()
-{
-	unsigned int octaedro_indices[] = {
-		// front up
-		0, 1, 2,
-		// right up
-		3, 4 ,5,
-		// back up
-		6, 7, 8,
-		// left up
-		9, 10, 11,
-		// front bottom
-		12, 13, 14,
-		// rigth bottom
-		15, 16, 17,
-		// back bottom
-		18, 19, 20,
-		// left bottom
-		21, 22, 23
-	};
-	
-// average normals
-	GLfloat octaedro_vertices[] = {
-		// front up
-		//x		y		z		S		T			NX		NY		NZ
-		-0.5f, 0.0f,  0.5f,		0.145f, 0.665f,		0.0f,	-1.0f,	0.0f,	//0
-		0.5f,  0.0f,  0.5f,		0.289f,	0.34f,		0.0f,	-1.0f,	0.0f,	//1
-		0.0f,  0.5f,  0.0f,		0.428f,	0.665f,		0.0f,	-1.0f,	0.0f,	//2
-	
-		// right up
-		//x		y		z		S		T
-		0.5f,  0.0f,  0.5f,	    0.289f,	0.338f,		 1.0f,	0.0f,	0.0f,	//3
-		0.5f,  0.0f, -0.5f, 	0.580f,	0.338f,		 1.0f,	0.0f,	0.0f,	//4
-		0.0f,  0.5f,  0.0f,		0.428f,	0.67f,		 1.0f,	0.0f,	0.0f,	//5
-	
-		// back up
-		0.5f,  0.0f, -0.5f,		0.575f,	0.335f,		0.0f,	0.0f,	1.0f,	//6
-		-0.5f, 0.0f, -0.5f,		0.71f,	0.66f,		0.0f,	0.0f,	1.0f,	//7
-		0.0f,  0.5f,  0.0f,		0.435f,	0.66f,		0.0f,	0.0f,	1.0f,	//8
-
-
-		// left up
-		//x		y		z		S		T
-		-0.5f,  0.0f,  -0.5f,	0.71f, 0.665f,		1.0f,	0.0f,	0.0f,	//9
-		-0.5f,  0.0f,  0.5f,	0.99f,	0.665f,		1.0f,	0.0f,	0.0f,	//10
-		 0.0f,  0.5f,  0.0f,	0.847f,	0.999f,		1.0f,	0.0f,	0.0f,	//11
-		
-
-		// front bottom
-		//x		y		z		S		T
-		 0.0f, -0.5f,  0.0f,	0.001f, 0.335f,		0.0f,	1.0f,	0.0f,	//12
-		 0.5f,  0.0f,  0.5f,	0.285f,	0.335f,		0.0f,	1.0f,	0.0f,	//13
-		-0.5f,  0.0f,  0.5f,	0.142f,	0.67f,		0.0f,	1.0f,	0.0f,	//14
-
-
-		// rigth bottom
-		//x		y		z		S		T
-		 0.0f, -0.5f,  0.0f,	0.004f, 0.336f,		-1.0f,	0.0f,	0.0f,	//15
-		 0.5f,  0.0f, -0.5f,	0.142f,	0.005f,		-1.0f,	0.0f,	0.0f,	//16
-		 0.5f,  0.0f,  0.5f,	0.281f,	0.336f,		-1.0f,	0.0f,	0.0f,	//17
-
-		// back bottom
-		//x		y		z		S		T
-		 0.0f, -0.5f,  0.0f,	0.857f, 0.335f,		0.0f,	0.0f,	1.0f,	//18
-		-0.5f,  0.0f, -0.5f,	0.712f,	0.665f,		0.0f,	0.0f,	1.0f,	//19
-		 0.5f,  0.0f, -0.5f,	0.571f,	0.335f,		0.0f,	0.0f,	1.0f,	//20
-
-		// left bottom
-		//x		y		z		S		T
-		 0.0f, -0.5f,  0.0f,	0.855f, 0.338f,		1.0f,	0.0f,	0.0f,	//21
-		-0.5f,  0.0f,  0.5f,	0.991f,	0.665f,		1.0f,	0.0f,	0.0f,	//22
-		-0.5f,  0.0f, -0.5f,	0.714f,	0.665f,		1.0f,	0.0f,	0.0f,	//23
-		
-
-	};
-	
-	Mesh* octaedro = new Mesh();
-	octaedro->CreateMesh(octaedro_vertices, octaedro_indices, 192, 24);
-	meshList.push_back(octaedro);
-
-}
-
 
 
 int main()
@@ -392,13 +702,31 @@ int main()
 
 	CreateObjects();
 	CreateShaders();
+	CrearDado();
+
 
 	GLuint uniformTextureOffset = 0;
 	uniformTextureOffset = shaderList[0].getoffsetLocation();
-	
 
-	camera = Camera(glm::vec3(0.0f, 15.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 0.5f, 0.5f);
 
+	camera = Camera(glm::vec3(-10.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.0f, 0.5f, 0.5f);
+
+
+	//***************Sonido******************************
+	ISoundEngine* sonido = createIrrKlangDevice();
+	sonido->setSoundVolume(0.30f);
+
+	ISound* bree = sonido->play2D("Sonidos/Breeze.mp3", true, false, true);
+	ISound* mar = sonido->play2D("Sonidos/mar.mp3", true, false, true);
+	ISound* noche= sonido->play2D("Sonidos/noche.mp3", true, true, true);
+	ISound* compu = sonido->play2D("Sonidos/compu.mp3", true, true, true);
+
+	bree->setVolume(0.5);
+	mar->setVolume(0.5);
+	noche->setVolume(0.5);
+	compu->setVolume(1.0);
+
+	// ****** texturas ******
 	dirtTexture = Texture("Textures/dirt.png");
 	dirtTexture.LoadTextureA();
 	plainTexture = Texture("Textures/plain.png");
@@ -415,11 +743,10 @@ int main()
 	paredATexture.LoadTextureA();
 	aguaTexture = Texture("Textures/agua.tga");
 	aguaTexture.LoadTextureA();
+	phoenixTexture = Texture("Textures/Textura_phoenix.tga");
+	phoenixTexture.LoadTextureA();
 
-
-
-
-	
+	// ***** modelos *****
 	contenedor_M = Model();
 	contenedor_M.LoadModel("Models/contenedor.obj");
 	caja_M = Model();
@@ -440,6 +767,28 @@ int main()
 	jett_M.LoadModel("Models/jett.obj");
 	tiro_M = Model();
 	tiro_M.LoadModel("Models/tiro.obj");
+	gr_M = Model();
+	gr_M.LoadModel("Models/gunRoom.obj");
+	ak47_M = Model();
+	ak47_M.LoadModel("Models/ak47.obj");
+	pistol_M = Model();
+	pistol_M.LoadModel("Models/pistol.obj");
+	rifle_M = Model();
+	rifle_M.LoadModel("Models/rifle.obj");
+	shotgun_M = Model();
+	shotgun_M.LoadModel("Models/shotgun.obj");
+	machP_M = Model();
+	machP_M.LoadModel("Models/machine_pistol.obj");
+	heavyP_M = Model();
+	heavyP_M.LoadModel("Models/heavyPistol.obj");
+	faro_M = Model();
+	faro_M.LoadModel("Models/faro.obj");
+	antorcha_M = Model();
+	antorcha_M.LoadModel("Models/antorcha.obj");
+
+	
+
+	
 
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/Daylight Box_Right.tga");
@@ -449,94 +798,135 @@ int main()
 	skyboxFaces.push_back("Textures/Skybox/Daylight Box_Front.tga");
 	skyboxFaces.push_back("Textures/Skybox/Daylight Box_Back.tga");
 
+	std::vector<std::string> skyboxFacesN;
+	skyboxFacesN.push_back("Textures/Skybox/cupertin-lake-night_rt.tga");
+	skyboxFacesN.push_back("Textures/Skybox/cupertin-lake-night_lf.tga");
+	skyboxFacesN.push_back("Textures/Skybox/cupertin-lake-night_dn.tga");
+	skyboxFacesN.push_back("Textures/Skybox/cupertin-lake-night_up.tga");
+	skyboxFacesN.push_back("Textures/Skybox/cupertin-lake-night_ft.tga");
+	skyboxFacesN.push_back("Textures/Skybox/cupertin-lake-night_bk.tga");
+
 	skybox = Skybox(skyboxFaces);
 
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
+	Material_phoenix = Material(1.0f, 128);
 
 	//luz direccional, sólo 1 y siempre debe de existir
-	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
-		0.8f, 0.8f,
-		0.0f, 0.0f, -1.0f);
+
+	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,  // luz de dia
+		0.9f, 0.9f,
+		0.0f, 0.0f, 0.0f);
+
+	mainLight_night = DirectionalLight(0.3f, 0.3f, 0.3f,  // luz de dia
+		0.3f, 0.3f,
+		0.0f, 0.0f, 0.0f);
+
 	//contador de luces puntuales
 	unsigned int pointLightCount = 0;
 	//Declaración de primer luz puntual
-	pointLights[0] = PointLight(0.0f, 1.0f, 0.0f,
-		3.0f, 3.0f,
-		30.0f, 40.f, -60.0f,
-		0.3f, 0.2f, 0.1f);
-	pointLightCount++;
-	//Declaración de segunda luz puntual
-	pointLights[1] = PointLight(1.0f, 0.0f, 0.0f,
-		3.0f, 3.0f,
-		30.0f, 40.f, -60.0f,
+	pointLights[0] = PointLight(1.0f, 1.0f, 1.0f, // luz galeria
+		1.0f, 1.0f,
+		-45.0f, 2.0f, -10.0f,
 		0.3f, 0.2f, 0.1f);
 	pointLightCount++;
 
-	unsigned int spotLightCount = 0;
+	pointLights[1] = PointLight(1.0f, 1.0f, 0.0f,
+		0.8f, 0.8f,
+		20.0f, 3.0f, 15.0f,
+		0.3f, 0.2f, 0.1f);
+	pointLightCount++;
+
+	pointLights[2] = PointLight(1.0f, 0.0f, 0.0f,
+		0.7f, 0.7f,
+		-4.3f, 4.0f, 0.0f,
+		0.3f, 0.2f, 0.1f);
+	pointLightCount++;
 	
-	/*
+	unsigned int spotLightCount = 0;
+
+	//luz de computadora
+	spotLights[0] = SpotLight(0.0f, 0.0f, 1.0f,
+		0.1f, 1.0f,
+		-30.0f, 1.0, -14.0f,
+		0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f,
+		10.0f);
+	spotLightCount++;
+
 	//luz fija
-	spotLights[1] = SpotLight(0.0f, 0.0f, 1.0f,
+	spotLights[1] = SpotLight(1.0f, 0.0f, 0.0f,
 		1.0f, 2.0f,
-		5.0f, 10.0f, 0.0f,
-		0.0f, -5.0f, 0.0f,
+		18.0f, 9.0f, -17.5f,
+		0.0f, -1.0f, 0.0f,
 		1.0f, 0.0f, 0.0f,
 		15.0f);
 	spotLightCount++;
-	
 
-	//luz de computadora
-	spotLights[1] = SpotLight(0.0f, 0.0f, 0.0f,
-		0.0001f, 0.0001f,
-		100.0f, 5.0, -121.0f,
-		0.0f, 0.0f, 1.0f,
-		0.05f, 0.0f, 0.0f,
-		60.0f);
-	spotLightCount++;
-	*/
-
-	//linterna
-	spotLights[0] = SpotLight(1.0f, 1.0f, 1.0f,
-		0.0f, 2.0f,
-		0.0f, 0.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
+	//luz del faro
+	spotLights[2] = SpotLight(1.0f, 1.0f, 1.0f,
+		0.1f, 2.0f,
+		0.0f, 10.0f, 0.0f,
 		1.0f, 0.0f, 0.0f,
-		10.0f);
-	spotLightCount++;
-	/*
-	//luz de helicóptero
-	spotLights[1] = SpotLight(0.0f, 0.8f, 1.0f,
-		1.0f, 2.0f,
-		1.5f, 4.5f, 31.0f,
-		0.0f, -1.0f, 0.0f,
 		1.0f, 0.0f, 0.0f,
 		10.0f);
 	spotLightCount++;
 
-	//luz de antrocha
-	pointLights[2] = PointLight(1.0f, 0.5f, 0.0f,
-		1.0f, 3.0f,
-		193.5f, 18.0f, -150.0f,
-		0.3f, 0.2f, 0.1f);
-	pointLightCount++;
-	*/
 	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosition = 0,
 		uniformSpecularIntensity = 0, uniformShininess = 0;
 	GLuint uniformColor = 0;
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
-	
 
-	////////////
+
+	//*** puerta ****
 	puerta = -1.55;
-	
 
-	////////
+	// *** agua ***
 	cordTexU = 0.0f;
 	cordTexV = 0.0f;
 
+	// *** jett ***
+	xJett = -13.0f;
+	yJett = -1.9f;
+	rotJett = 0.0f;
+	banderajett = 1.0;
+
+	// **** humo ****
+	scaHumo = 5.0f;
+	rotHumo = 0.0f;
+	banderahumo = 1.0f;
+
+	// **** tiro ****
+	scaTiro = ScaTiro2 = 1.0;
+	xTiro = -25.0f;
+	xTiro2 = -40.0f;
+	yTiro = 1.8f;
+	yTiro2 = -0.5f;
+	bt = bt2 = 1.0f;
+
+	// **** textura ***
 	glm::vec2 toffset = glm::vec2(0.0f, 0.0f);
+
+	// **** camara ****
+	glm::vec3 camara1 = glm::vec3(-10.0f, 5.0f, 0.0f);
+	glm::vec3 camaraG = glm::vec3(-25.0f, 3.0f, -0.0f);
+	glm::vec3 camara3 = glm::vec3(-10.0f, 5.0f, 0.0f);
+	yawG = 180.0f;
+	yawG = 60.0f;
+	pitch1 = 0.0f;
+
+	// *** iluminacion 
 	
+	dia = 1.0f;
+	cont = 1.0f;
+	cont2 = 0.0f;
+	bandI = 1.0;
+	red = 1.0f;
+	green = 1.0f;
+	blue = 1.0f;
+
+
+
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
 	{
@@ -545,10 +935,11 @@ int main()
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
 
+
 		glm::vec2 toffset = glm::vec2(0.0f, 0.0f);
 
 		// ***** moviemiento de puerta ****
-		if (mainWindow.getapaga() == 0.0f) {
+		if (mainWindow.getapagaP() == 0.0f) {
 			if (puerta < 4.0f) {
 				puerta += 0.05 * deltaTime;
 			}
@@ -559,10 +950,97 @@ int main()
 			}
 		}
 
+		// ***** muscica computadora ****
+		if (mainWindow.getapagaM() == 1.0f) {
+			compu->setIsPaused(true);
+			bree->setVolume(0.5);
+			mar->setVolume(0.5);
+			noche->setVolume(0.5);
+		}
+		else {
+			compu->setIsPaused(false);
+			bree->setVolume(0.3);
+			mar->setVolume(0.3);
+			noche->setVolume(0.3);
+		}
+
+		// ****** animacion basica jett ******
+		if (mainWindow.getapagaA1() == 1.0) {
+			if (banderajett == 1.0f) {
+				if (yJett < 5.0f) {
+					yJett += 0.1 * deltaTime;
+					rotJett += 10.0 * deltaTime;
+				}
+				else {
+					banderajett = 0.0f;
+				}
+			}
+			else if (banderajett == 0.0f) {
+				if (yJett > -1.9) {
+					yJett -= 0.1 * deltaTime;
+					rotJett += 10.0 * deltaTime;
+				}
+				else {
+
+				}
+			}
+		}
+		else {
+			banderajett = 1.0;
+
+		}
+		// **** animacion basica humo ******
+
+		if (banderahumo == 1.0f) {
+			if (scaHumo > 0.0f) {
+				scaHumo -= 0.01f;
+			}
+			else
+			{
+				banderahumo = 0.0f;
+			}
+		}
+		else if (banderahumo == 0.0f) {
+			if (scaHumo < 5.0f) {
+				scaHumo += 0.01f;
+			}
+			else
+			{
+				banderahumo = 1.0f;
+			}
+
+		}
+		rotHumo += 10.0 * deltaTime;
+
+		// **** animacion compleja tiro ****
+
+		if (bt == 1.0f) {
+			if (xTiro > -40.0f) {
+				xTiro -= 0.01 * deltaTime;
+				yTiro += (1.0 * sin(1.0 * toRadians)) * deltaTime;
+
+			}
+		}
+
+
 		//Recibir eventos del usuario
 		glfwPollEvents();
-		camera.keyControl(mainWindow.getsKeys(), deltaTime);
-		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+
+		// ***************** camaras **********
+		if (mainWindow.getapagaC() == 1.0f) {
+			camera = Camera(camara1, glm::vec3(0.0f, 1.0f, 0.0f), yaw1, pitch1, 0.5f, 0.5f);
+			camera.keyControl(mainWindow.getsKeys(), deltaTime);
+			camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+			camara1 = camera.getCameraPosition();
+			yaw1 = camera.getCameraYaw();
+			pitch1 = camera.getCameraPitch();
+		}
+		else if (mainWindow.getapagaC() == 2.0f) {
+			camera = Camera(camaraG, glm::vec3(0.0f, 1.0f, 0.0f), yawG, 0.0f, 0.5f, 0.5f);
+			camera.mouseControl(mainWindow.getXChange(), 0);
+			yawG = camera.getCameraYaw();
+
+		}
 
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -582,61 +1060,80 @@ int main()
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
-		
-		/*
-		if (mainWindow.getflag() == 1.0) {
-			//luz de carro hacia adelante
-			spotLights[2] = SpotLight(1.0f, 0.0f, 0.5f,
-				1.0f, 5.0f,
-				6.0f, 6.0, 0.0f,
-				1.0f, 0.0f, 0.0f,
-				1.0f, 0.0f, 0.0f,
-				15.0f);
-			spotLightCount=3;
-		}
-		else {
-			//luz de carro hacia atras
-			spotLights[2] = SpotLight(0.0f, 1.0f, 0.0f,
-				1.0f, 5.0f,
-				6.0f, 6.0, 0.0f,
-				-1.0f, 0.0f, 0.0f,
-				1.0f, 0.0f, 0.0f,
-				15.0f);
-			spotLightCount=3;
-		}
-		*/
-		// luz ligada al helicoptero de tipo flash
-		glm::vec3 heliLight(mainWindow.getmueveHelix(), mainWindow.getmueveHeliy(), 
-		mainWindow.getmueveHeliz());
-		spotLights[1].SetFlash(heliLight, glm::vec3(0.0f, -1.0f, 0.0f));
 
-		if (mainWindow.getflag() == 1.0f) {
-			// luz ligada al carro de tipo flash delantera
-			glm::vec3 autoLightd(mainWindow.getmuevex(), 0.5f, mainWindow.getmuevez());
-			spotLights[2].SetFlash(autoLightd, glm::vec3(1.0f, 0.0f, 0.0f));
-		}else {
-			// luz ligada al carro de tipo flash trasera
-			glm::vec3 autoLightt(mainWindow.getmuevex(), 0.5f, mainWindow.getmuevez());
-			spotLights[2].SetFlash(autoLightt, glm::vec3(-1.0f, 0.0f, 0.0f));
-		}
-		// luz ligada a la cámara de tipo flash
-		glm::vec3 lowerLight = camera.getCameraPosition();
-		lowerLight.y -= 0.3f;
-		spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
+
+
 		
 
-		// luz ligada a la primera luz puntual de tipo flash
-		glm::vec3 point1Light(mainWindow.getmuevex(), 40.0f, mainWindow.getmuevez());
-		pointLights[0].SetFlash(point1Light);
-
-		// luz ligada a la segunda luz puntual de tipo flash
-		glm::vec3 point2Light(mainWindow.getmueveHelix(), 40.0f, mainWindow.getmueveHeliz());
-		pointLights[1].SetFlash(point2Light);
-		
+		red = rand() % 256 / 255.0f;
+		green = rand() % 256 / 255.0f;
+		blue = rand() % 256 / 255.0f;
 
 		//información al shader de fuentes de iluminación
-		shaderList[0].SetDirectionalLight(&mainLight);
-		shaderList[0].SetPointLights(pointLights, pointLightCount);
+
+		if (dia == 1.0f) { // dia
+			if (now < (30.0f * cont)) {
+				if (bandI == 1.0f) {
+					bree->setIsPaused(false);
+					noche->setIsPaused(true);
+					skybox = Skybox(skyboxFaces);
+					shaderList[0].SetDirectionalLight(&mainLight);
+					spotLightCount = 1.0f;
+					bandI = 0.0f;
+				}
+			}
+			else {
+				cont2 = cont2 + 2.0f;
+				dia = 0.0f;
+				bandI = 1.0f;
+			}
+		}
+		else if (dia == 0.0f){ // noche
+			if (now < (30.0f * cont2)) { 
+				if (bandI == 1.0f) {
+					bree->setIsPaused(true);
+					noche->setIsPaused(false);
+					skybox = Skybox(skyboxFacesN);
+					shaderList[0].SetDirectionalLight(&mainLight_night);
+					spotLightCount = 3.0f;
+					bandI = 0.0f;
+				}
+				
+				spotLights[1] = SpotLight(red, green, blue,
+					1.0f, 2.0f,
+					18.0f, 9.0f, -17.5f,
+					0.0f, -1.0f, 0.0f,
+					1.0f, 0.0f, 0.0f,
+					15.0f);
+
+				pointLights[2] = PointLight(red, green, blue,
+					0.7f, 0.7f,
+					-4.3f, 4.0f, 0.0f,
+					0.3f, 0.2f, 0.1f);
+				
+			}
+			else {
+				cont = cont + 2.0f;
+				dia = 1.0f;
+				bandI = 1.0f;
+			}
+		}
+
+		spotLights[0] = SpotLight(red, green, blue,
+			1.0f, 1.3f,
+			-30.0f, 1.0, -13.0f,
+			0.0f, 0.0f, 1.0f,
+			0.5f, 0.5f, 0.0f,
+			20.0f);
+
+		// *** apagar luces point
+		if (mainWindow.getapagal() == 1.0f) {
+			shaderList[0].SetPointLights(pointLights, pointLightCount);
+		}
+		else {
+			shaderList[0].SetPointLights(pointLights, 0);
+		}
+
 		shaderList[0].SetSpotLights(spotLights, spotLightCount);
 		
 
@@ -930,7 +1427,7 @@ int main()
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		caja_M.RenderModel();
 
-		// *** caja 7***
+		// *** caja 8***
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(-49.0f, -2.0f, -10.0f));
 		model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
@@ -939,6 +1436,35 @@ int main()
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		caja_M.RenderModel();
+
+		// *** antorcha 1***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-45.0f, -1.99f, -10.0f));
+		model = glm::scale(model, glm::vec3(3.0f, 4.0f, 3.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		antorcha_M.RenderModel();
+
+		// *** antorcha 2***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(22.1f, 3.0f, 15.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.50f));
+		model = glm::rotate(model, 30 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		antorcha_M.RenderModel();
+
+		// *** antorcha 3***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-3.3f, 4.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.50f));
+		model = glm::rotate(model, 30 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		antorcha_M.RenderModel();
 
 		// *** mesa ***
 		model = glm::mat4(1.0);
@@ -961,7 +1487,8 @@ int main()
 		// *** humo ***
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -16.0f));
-		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
+		model = glm::scale(model, glm::vec3(scaHumo, scaHumo, scaHumo));
+		model = glm::rotate(model, rotHumo * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -969,17 +1496,76 @@ int main()
 
 		// *** jett ***
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-13.0f, -1.9f, 0.0f));
+		model = glm::translate(model, glm::vec3(xJett, yJett, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::rotate(model, rotJett * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		jett_M.RenderModel();
 
+
+		// *** cuerpo phoenix***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-10.0f, 0.4f, -10.0f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_phoenix.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		phoenixTexture.UseTexture();
+		meshList[6]->RenderMesh();
+
+		// *** cabeza phoenix***
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 1.3, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_phoenix.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		phoenixTexture.UseTexture();
+		meshList[5]->RenderMesh();
+
+		// *** brazoD phoenix***
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(-0.7f, -0.1, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_phoenix.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		phoenixTexture.UseTexture();
+		meshList[7]->RenderMesh();
+
+		// *** brazoI phoenix***
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.7f, -0.1, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_phoenix.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		phoenixTexture.UseTexture();
+		meshList[8]->RenderMesh();
+
+		// *** piernaD phoenix***
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(-0.25f, -1.6, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_phoenix.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		phoenixTexture.UseTexture();
+		meshList[9]->RenderMesh();
+
+		// *** piernaI phoenix***
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.25f, -1.6, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_phoenix.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		phoenixTexture.UseTexture();
+		meshList[10]->RenderMesh();
+		
 		// *** tiro 1 ***
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-30.0f, 1.5f, 14.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::translate(model, glm::vec3(xTiro, yTiro, 14.0f));
+		model = glm::scale(model, glm::vec3(scaTiro, scaTiro, scaTiro));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -987,21 +1573,88 @@ int main()
 
 		// *** tiro 2 ***
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-35.0f, 1.5f, 14.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::translate(model, glm::vec3(xTiro2, yTiro2, 14.0f));
+		model = glm::scale(model, glm::vec3(ScaTiro2, ScaTiro2, ScaTiro2));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		tiro_M.RenderModel();
 
-		// *** tiro 3 ***
+
+		// *** cuarto de armas ***
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-40.0f, 1.5f, 14.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::translate(model, glm::vec3(-49.3f, -1.9f, 11.9f));
+		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-		tiro_M.RenderModel();
+		gr_M.RenderModel();
+
+		// *** ak47 ***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-52.3f, 2.0f, 5.0f));
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		ak47_M.RenderModel();
+
+		// *** pistol ***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-52.3f, 2.0f, 3.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		pistol_M.RenderModel();
+
+		// *** rifle ***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-52.3f, 2.0f, -2.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		rifle_M.RenderModel();
+
+		// *** shotgun ***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-52.3f, 2.0f, -6.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		shotgun_M.RenderModel();
+
+		// *** machine pistola***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-52.3f, 2.0f, -10.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		machP_M.RenderModel();
+
+		// *** heavy pistola***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-52.3f, 2.0f, -15.0f));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		heavyP_M.RenderModel();
+
+
+		// *** faro ***
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(20.0f, -1.9f, -19.0f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
+		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		faro_M.RenderModel();
 
 		// *** pared interna 1 ***
 		model = glm::mat4(1.0);

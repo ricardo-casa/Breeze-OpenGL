@@ -18,13 +18,17 @@ public:
 	GLfloat getmueveHelix() { return mueveHelix; }
 	GLfloat getmueveHeliy() { return mueveHeliy; }
 	GLfloat getmueveHeliz() { return mueveHeliz; }
-	GLfloat getapaga() { return apaga; }
+	GLfloat getapagaP() { return apagaP; }
+	GLfloat getapagaM() { return apagaM; }
+	GLfloat getapagal() { return apagal; }
+	GLfloat getapagaC() { return apagaC; }
+	GLfloat getapagaA1() { return apagaA1; }
 	GLfloat getflag() { return flag; }
 	bool getShouldClose() {
 		return  glfwWindowShouldClose(mainWindow);}
 	bool* getsKeys() { return keys; }
 	void swapBuffers() { return glfwSwapBuffers(mainWindow); }
-	
+
 	~Window();
 private: 
 	GLFWwindow *mainWindow;
@@ -41,11 +45,19 @@ private:
 	GLfloat mueveHelix;
 	GLfloat mueveHeliy;
 	GLfloat mueveHeliz;
-	GLfloat apaga;
+	GLfloat apagaP;
+	GLfloat apagaM;
+	GLfloat apagal;
+	GLfloat apagaC;
+	GLfloat apagaA1;
 	GLfloat flag;
 	bool mouseFirstMoved;
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
+
+	
+
+	
 
 };
 

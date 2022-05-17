@@ -18,7 +18,11 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	mueveHelix = 30.0f;
 	mueveHeliy = 5.0f;
 	mueveHeliz = -65.0f;
-	apaga = 1.0f;
+	apagaP = 1.0f;
+	apagaM = 1.0f;
+	apagal = 1.0f;
+	apagaC = 1.0f;
+	apagaA1 = 0.0f;
 	flag = 1.0f;
 	for (size_t i = 0; i < 1024; i++)
 	{
@@ -112,61 +116,58 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	if (key == GLFW_KEY_Y)
+	if (key == GLFW_KEY_T && action == GLFW_PRESS)
 	{
-		theWindow-> muevex += 1.0;
-		theWindow->flag = 1.0;
-	}
-	if (key == GLFW_KEY_U)
-	{
-		theWindow-> muevex -= 1.0;
-		theWindow->flag = 0.0;
-	}
-	if (key == GLFW_KEY_I)
-	{
-		theWindow->muevez += 1.0;
-	}
-	if (key == GLFW_KEY_O)
-	{
-		theWindow->muevez -= 1.0;
-	}
-	if (key == GLFW_KEY_G)
-	{
-		theWindow->mueveHelix += 1.0;
-	}
-	if (key == GLFW_KEY_H)
-	{
-		theWindow->mueveHelix -= 1.0;
-	}
-	if (key == GLFW_KEY_J)
-	{
-		theWindow->mueveHeliy += 1.0;
-	}
-	if (key == GLFW_KEY_K)
-	{
-		theWindow->mueveHeliy -= 1.0;
-	}
-	if (key == GLFW_KEY_Z)
-	{
-		theWindow->mueveHeliz += 1.0;
-	}
-	if (key == GLFW_KEY_X)
-	{
-		theWindow->mueveHeliz -= 1.0;
-	}
-	if (key == GLFW_KEY_M && action == GLFW_PRESS)
-	{
-		if (theWindow->apaga == 1.0) {
-			theWindow->apaga = 0.0;
+		if (theWindow->apagal == 1.0) {
+			theWindow->apagal = 0.0;
 		}
 		else {
-			theWindow->apaga = 1.0;
+			theWindow->apagal = 1.0;
+		}
+	}
+	if (key == GLFW_KEY_U && action == GLFW_PRESS)
+	{
+		if (theWindow->apagaC == 1.0) {
+			theWindow->apagaC = 2.0;
+		}
+		else if(theWindow->apagaC == 2.0){
+			theWindow->apagaC = 3.0;
+		}
+		else {
+			theWindow->apagaC = 1.0;
 		}
 	}
 	
-
-
-
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		if (theWindow->apagaA1 == 1.0) {
+			theWindow->apagaA1 = 0.0;
+		}
+		else {
+			theWindow->apagaA1 = 1.0;
+		}
+	}
+	
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		if (theWindow->apagaP == 1.0) {
+			theWindow->apagaP = 0.0;
+		}
+		else {
+			theWindow->apagaP = 1.0;
+		}
+	}
+	
+	if (key == GLFW_KEY_M && action == GLFW_PRESS)
+	{
+		if (theWindow->apagaM == 1.0) {
+			theWindow->apagaM = 0.0;
+		}
+		else {
+			theWindow->apagaM = 1.0;
+		}
+	}
+	
 	if (key >= 0 && key < 1024)
 	{
 		if (action == GLFW_PRESS)
@@ -199,6 +200,7 @@ void Window::ManejaMouse(GLFWwindow* window, double xPos, double yPos)
 	theWindow->lastX = xPos;
 	theWindow->lastY = yPos;
 }
+
 
 
 Window::~Window()
