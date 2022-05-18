@@ -8,7 +8,6 @@ Shader::Shader()
 	uniformColor = 0;
 	pointLightCount = 0;
 	spotLightCount = 0;
-
 }
 
 void Shader::CreateFromString(const char* vertexCode, const char* fragmentCode)
@@ -92,7 +91,6 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
 	uniformEyePosition = glGetUniformLocation(shaderID, "eyePosition");
 	uniformColor = glGetUniformLocation(shaderID, "color");
-	uniformTextureoffset = glGetUniformLocation(shaderID, "toffset");
 
 	uniformPointLightCount = glGetUniformLocation(shaderID, "pointLightCount");
 
@@ -156,10 +154,6 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 		uniformSpotLight[i].uniformEdge = glGetUniformLocation(shaderID, locBuff);
 	}
 
-}
-
-GLuint Shader::getoffsetLocation(){
-	return uniformTextureoffset;
 }
 
 GLuint Shader::GetProjectionLocation()

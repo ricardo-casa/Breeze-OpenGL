@@ -2,10 +2,7 @@
   Proyecto.cpp
 C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
 C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
-C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(531,16): warning C4305: '=': truncamiento de 'double' a 'float'
-C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(543,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(545,43): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(553,31): warning C4244: '+=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(558,31): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(526,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Proyecto\Proyecto\Proyecto.cpp(528,43): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
 LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
   Proyecto.vcxproj -> C:\Users\mikea\Desktop\8\CGeIHC\Lab\LabCGeIH07_20222\Debug\Proyecto.exe
